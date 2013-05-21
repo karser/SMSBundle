@@ -56,7 +56,7 @@ class SendSmsCommand extends BaseCommand
         foreach ($tasks as $SmsTask)
         {
             $is_sent = $this->SMSManager->send($SmsTask);
-            if (!$is_sent) {
+            if ($is_sent) {
                 $SmsTask->setStatus(SMSTaskInterface::STATUS_SENT);
                 $this->output->write('.');
             } else {
