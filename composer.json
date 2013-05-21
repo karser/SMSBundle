@@ -1,0 +1,26 @@
+{
+    "name": "karser/sms-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony SMSBundle",
+    "keywords": ["sms"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": ">=2.1,<2.3-dev"
+    },
+    "suggest": {
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "doctrine/doctrine-bundle": ">1.0.0"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": { "Karser\\SMSBundle": "" }
+    },
+    "target-dir": "Karser/SMSBundle",
+    "authors": [
+        {
+            "name": "Dmitry Poddubny",
+            "email": "dpoddubny@gmail.com"
+        }
+    ]
+}
