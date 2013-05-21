@@ -1,0 +1,7 @@
+parameters:
+    karser.sms.manager.class: Karser\SMSBundle\Manager\SMSManager
+
+services:
+    karser.sms.manager:
+        class: %karser.sms.manager.class%
+        arguments: [ @doctrine.orm.entity_manager ]
