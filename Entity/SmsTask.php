@@ -47,13 +47,6 @@ abstract class SmsTask implements SMSTaskInterface
     protected $status;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    protected $isSent = false;
-
-    /**
      * Get id
      *
      * @return integer 
@@ -130,29 +123,6 @@ abstract class SmsTask implements SMSTaskInterface
     public function getSender()
     {
         return $this->sender;
-    }
-
-    /**
-     * Set isSent
-     *
-     * @param boolean $isSent
-     * @return SmsTask
-     */
-    public function setIsSent($isSent)
-    {
-        $this->isSent = $isSent;
-    
-        return $this;
-    }
-
-    /**
-     * Get isSent
-     *
-     * @return boolean 
-     */
-    public function getIsSent()
-    {
-        return $this->isSent;
     }
 
     /**
