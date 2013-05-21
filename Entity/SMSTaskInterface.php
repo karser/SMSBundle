@@ -77,22 +77,6 @@ interface SMSTaskInterface
     public function getSender();
 
     /**
-     * Set isSent
-     *
-     * @param boolean $isSent
-     * @return SmsTask
-     */
-    public function setIsSent($isSent);
-
-    /**
-     * Get isSent
-     *
-     * @return boolean
-     */
-    public function getIsSent();
-
-
-    /**
      * @param string $status
      */
     public function setStatus($status);
