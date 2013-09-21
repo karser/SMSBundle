@@ -193,8 +193,10 @@ class SmsTask extends BaseClass
 ```
 
 ### Step 5: Available backends
-[MainSMS](https://github.com/karser/MainSMSBundle)
-[SMSVesti](https://github.com/karser/SMSVestiBundle)
+
+- [MainSMS](http://mainsms.ru/): [KarserMainSMSBundle](https://github.com/karser/MainSMSBundle)
+- [SMSVesti](http://smsvesti.ru/): [KarserSMSVestiBundle](https://github.com/karser/SMSVestiBundle)
+
 
 ### Usage Steps
 ``` php
