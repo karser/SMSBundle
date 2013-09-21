@@ -1,8 +1,6 @@
 Getting started with SMSBundle
 =============
 
-[SMS]
-
 ## Prerequisites
 
 This version of the bundle requires Symfony 2.1+ and Doctrine ORM 2.2+
@@ -74,7 +72,7 @@ app/console doctrine:schema:update --force
 
 ``` php
 <?php
-namespace ISMS\SMSBundle\Entity;
+namespace Your\Module\Entity;
 
 use Karser\SMSBundle\Entity\SmsTask as BaseClass;
 use Doctrine\ORM\Mapping as ORM;
