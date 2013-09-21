@@ -7,14 +7,6 @@ This version of the bundle requires Symfony 2.1+ and Doctrine ORM 2.2+
 
 ## Installation
 
-Installation is a quick 3 step process:
-
-1. Download KarserSMSBundle using composer
-2. Enable the Bundle
-3. Configure the KarserSMSBundle
-4. Implement the sms_task entity
-5. Available backends
-
 ### Step 1: Download KarserSMSBundle using composer
 
 Add KarserSMSBundle in your composer.json:
