@@ -4,4 +4,4 @@ parameters:
 services:
     karser.sms.manager:
         class: %karser.sms.manager.class%
-        arguments: [ @doctrine.orm.entity_manager ]
+        arguments: [ @doctrine.orm.entity_manager, %karser.sms.entity.sms_task.class%, %karser.sms.default_handler% ]

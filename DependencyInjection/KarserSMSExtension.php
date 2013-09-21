@@ -23,6 +23,7 @@ class KarserSMSExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('karser.sms.entity.sms_task.class', $config['sms_task_class']);
+        $container->setParameter('karser.sms.default_handler', $config['default_handler']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

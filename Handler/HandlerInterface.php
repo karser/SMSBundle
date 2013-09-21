@@ -18,7 +18,13 @@ interface HandlerInterface
 
     /**
      * @param SMSTaskInterface $SMSTask
-     * @return bool
+     * @return string
      */
     public function send(SMSTaskInterface $SMSTask);
+
+    /**
+     * @param string
+     * @return string
+     */
+    public function checkStatus($message_id);
 }

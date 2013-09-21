@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
         ->scalarNode('sms_task_class')->isRequired()->end()
+        ->scalarNode('default_handler')->isRequired()->end()
         ->end();
 
         return $treeBuilder;

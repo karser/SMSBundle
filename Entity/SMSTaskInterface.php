@@ -85,4 +85,14 @@ interface SMSTaskInterface
      * @return string
      */
     public function getStatus();
+
+    /**
+     * @param string $message_id
+     */
+    public function setMessageId($message_id);
+
+    /**
+     * @return string
+     */
+    public function getMessageId();
 }

@@ -24,6 +24,13 @@ abstract class SmsTask implements SMSTaskInterface
     protected $phoneNumber;
 
     /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     *
+     * @var string
+     */
+    protected $message_id;
+
+    /**
      * @ORM\Column(type="string", length=1000)
      *
      * @var string
@@ -140,4 +147,21 @@ abstract class SmsTask implements SMSTaskInterface
     {
         return $this->status;
     }
+
+    /**
+     * @param string $message_id
+     */
+    public function setMessageId($message_id)
+    {
+        $this->message_id = $message_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->message_id;
+    }
+
 }

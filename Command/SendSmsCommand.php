@@ -9,10 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendSmsCommand extends BaseCommand
 {
-    /** @var  SMSManager */
+    /** @var SMSManager */
     private $SMSManager;
 
-    /** @var  HandlerInterface */
+    /** @var HandlerInterface */
     private $handler;
 
     protected function configure()
@@ -37,7 +37,7 @@ class SendSmsCommand extends BaseCommand
     {
         $balance = $this->handler->getBalance();
         $this->writeBalance($balance);
-        if ($balance <= 0) {
+        if ($balance < 1) {
             throw new \LogicException('Balance error');
         }
     }
@@ -55,18 +55,35 @@ class SendSmsCommand extends BaseCommand
 
         foreach ($tasks as $SmsTask)
         {
-            $is_sent = $this->SMSManager->send($SmsTask);
-            if ($is_sent) {
-                $SmsTask->setStatus(SMSTaskInterface::STATUS_SENT);
+            try {
+                $msg_id = $this->handler->send($SmsTask);
+                $SmsTask->setMessageId($msg_id);
+                $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                $em->persist($SmsTask);
+                $em->flush();
                 $this->output->write('.');
-            } else {
-                $this->checkBalance();
-                $SmsTask->setStatus(SMSTaskInterface::STATUS_FAIL);
+            } catch (\Exception $e) {
                 $this->output->write('F');
+                $this->checkBalance();
+                continue;
             }
-            $em->persist($SmsTask);
         }
-        $em->flush();
+
+        /** @var SMSTaskInterface[] $tasks */
+        $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PROCESSING]);
+        $this->writelnFormatted(sprintf('Messages to check %d', count($tasks)));
+        foreach ($tasks as $SmsTask)
+        {
+            try {
+                $status = $this->handler->checkStatus($SmsTask->getMessageId());
+                $SmsTask->setStatus($status);
+                $em->persist($SmsTask);
+                $em->flush();
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
         $this->output->writeln('');
     }
 }
