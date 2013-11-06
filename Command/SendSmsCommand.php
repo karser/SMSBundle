@@ -56,9 +56,13 @@ class SendSmsCommand extends BaseCommand
         foreach ($tasks as $SmsTask)
         {
             try {
-                $msg_id = $this->handler->send($SmsTask);
-                $SmsTask->setMessageId($msg_id);
-                $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                if ($SmsTask->isValid()) {
+                    $msg_id = $this->handler->send($SmsTask);
+                    $SmsTask->setMessageId($msg_id);
+                    $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                } else {
+                    $SmsTask->setStatus(SMSTaskInterface::STATUS_FAIL);
+                }
                 $em->persist($SmsTask);
                 $em->flush();
                 $this->output->write('.');
@@ -75,7 +79,11 @@ class SendSmsCommand extends BaseCommand
         foreach ($tasks as $SmsTask)
         {
             try {
-                $status = $this->handler->checkStatus($SmsTask->getMessageId());
+                if ($SmsTask->isValid()) {
+                    $status = $this->handler->checkStatus($SmsTask->getMessageId());
+                } else {
+                    $status = SMSTaskInterface::STATUS_FAIL;
+                }
                 $SmsTask->setStatus($status);
                 $em->persist($SmsTask);
                 $em->flush();

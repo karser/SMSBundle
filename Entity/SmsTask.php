@@ -53,6 +53,16 @@ abstract class SmsTask implements SMSTaskInterface
      */
     protected $status;
 
+    public function isMessageEmpty()
+    {
+        return empty($this->message);
+    }
+
+    public function isValid()
+    {
+        return !$this->isMessageEmpty();
+    }
+
     /**
      * Get id
      *

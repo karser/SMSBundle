@@ -47,6 +47,16 @@ interface SMSTaskInterface
     public function getMessage();
 
     /**
+     * @return bool
+     */
+    public function isMessageEmpty();
+
+    /**
+     * @return bool
+     */
+    public function isValid();
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
