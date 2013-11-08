@@ -7,7 +7,8 @@ use Karser\SMSBundle\Manager\SMSManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SendSmsCommand extends BaseCommand
+
+class CheckSmsCommand extends BaseCommand
 {
     /** @var SMSManager */
     private $SMSManager;
@@ -17,8 +18,9 @@ class SendSmsCommand extends BaseCommand
 
     protected function configure()
     {
-        $this->setName('sms:send');
+        $this->setName('sms:check');
     }
+
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -27,22 +29,14 @@ class SendSmsCommand extends BaseCommand
 
         $this->output = $output;
 
-        $this->checkBalance();
-        $this->sendMessages();
+        $this->checkMessages();
 
         $this->output->writeln('Done.');
     }
 
-    private function checkBalance()
-    {
-        $balance = $this->handler->getBalance();
-        $this->writeBalance($balance);
-        if ($balance < 1) {
-            throw new \LogicException('Balance error');
-        }
-    }
 
-    private function sendMessages()
+
+    private function checkMessages()
     {
         $em = $this->getDoctrineMananger();
         $sms_task_class = $this->getContainer()->getParameter('karser.sms.entity.sms_task.class');
@@ -50,29 +44,24 @@ class SendSmsCommand extends BaseCommand
         $SmsTaskRepository = $em->getRepository($sms_task_class);
 
         /** @var SMSTaskInterface[] $tasks */
-        $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PENDING]);
-        $this->writelnFormatted(sprintf('Messages to send %d', count($tasks)));
-
+        $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PROCESSING]);
+        $this->writelnFormatted(sprintf('Messages to check %d', count($tasks)));
         foreach ($tasks as $SmsTask)
         {
             try {
                 if ($SmsTask->isValid()) {
-                    $msg_id = $this->handler->send($SmsTask);
-                    $SmsTask->setMessageId($msg_id);
-                    $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                    $status = $this->handler->checkStatus($SmsTask->getMessageId());
                 } else {
-                    $SmsTask->setStatus(SMSTaskInterface::STATUS_FAIL);
+                    $status = SMSTaskInterface::STATUS_FAIL;
                 }
+                $SmsTask->setStatus($status);
                 $em->persist($SmsTask);
                 $em->flush();
-                $this->output->write('.');
             } catch (\Exception $e) {
-                $this->output->write('F');
-                $this->checkBalance();
                 continue;
             }
         }
 
         $this->output->writeln('');
     }
-}
+} 
