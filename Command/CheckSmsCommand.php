@@ -5,14 +5,12 @@ use Karser\SMSBundle\Entity\SMSTaskInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 class CheckSmsCommand extends BaseCommand
 {
     protected function configure()
     {
         $this->setName('sms:check');
     }
-
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -22,8 +20,6 @@ class CheckSmsCommand extends BaseCommand
 
         $this->output->writeln('Done.');
     }
-
-
 
     private function checkMessages()
     {
@@ -39,9 +35,9 @@ class CheckSmsCommand extends BaseCommand
         $SMSManager = $this->getContainer()->get('karser.sms.manager');
         foreach ($tasks as $SmsTask)
         {
+            $handler = $SMSManager->getHandler($SmsTask->getHandler());
             try {
-                if ($SmsTask->isValid()) {
-                    $handler = $SMSManager->getHandler($SmsTask->getHandler());
+                if ($handler && $SmsTask->isValid()) {
                     $status = $handler->checkStatus($SmsTask->getMessageId());
                 } else {
                     $status = SMSTaskInterface::STATUS_FAIL;

@@ -48,7 +48,7 @@ class SendSmsCommand extends BaseCommand
         {
             $handler = $SMSManager->getHandler($SmsTask->getHandler());
             try {
-                if ($SmsTask->isValid()) {
+                if ($handler && $SmsTask->isValid()) {
                     $msg_id = $handler->send($SmsTask);
                     $SmsTask->setMessageId($msg_id);
                     $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);

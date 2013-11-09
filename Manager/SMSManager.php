@@ -52,7 +52,12 @@ class SMSManager
      */
     public function getHandler($code)
     {
-        return $this->handlers[$code] ? : null;
+        foreach ($this->handlers as $handler) {
+            if ($handler->getName() === $code) {
+                return $handler;
+            }
+        }
+        return null;
     }
 
     /**
