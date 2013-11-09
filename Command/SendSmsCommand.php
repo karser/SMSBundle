@@ -3,18 +3,11 @@ namespace Karser\SMSBundle\Command;
 
 use Karser\SMSBundle\Entity\SMSTaskInterface;
 use Karser\SMSBundle\Handler\HandlerInterface;
-use Karser\SMSBundle\Manager\SMSManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SendSmsCommand extends BaseCommand
 {
-    /** @var SMSManager */
-    private $SMSManager;
-
-    /** @var HandlerInterface */
-    private $handler;
-
     protected function configure()
     {
         $this->setName('sms:send');
@@ -22,20 +15,16 @@ class SendSmsCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->SMSManager = $this->getContainer()->get('karser.sms.manager');
-        $this->handler = $this->SMSManager->getDefaultHandler();
-
         $this->output = $output;
 
-        $this->checkBalance();
         $this->sendMessages();
 
         $this->output->writeln('Done.');
     }
 
-    private function checkBalance()
+    private function checkBalance(HandlerInterface $handler)
     {
-        $balance = $this->handler->getBalance();
+        $balance = $handler->getBalance();
         $this->writeBalance($balance);
         if ($balance < 1) {
             throw new \LogicException('Balance error');
@@ -53,11 +42,14 @@ class SendSmsCommand extends BaseCommand
         $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PENDING]);
         $this->writelnFormatted(sprintf('Messages to send %d', count($tasks)));
 
+        $SMSManager = $this->getContainer()->get('karser.sms.manager');
+
         foreach ($tasks as $SmsTask)
         {
+            $handler = $SMSManager->getHandler($SmsTask->getHandler());
             try {
                 if ($SmsTask->isValid()) {
-                    $msg_id = $this->handler->send($SmsTask);
+                    $msg_id = $handler->send($SmsTask);
                     $SmsTask->setMessageId($msg_id);
                     $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
                 } else {
@@ -68,7 +60,7 @@ class SendSmsCommand extends BaseCommand
                 $this->output->write('.');
             } catch (\Exception $e) {
                 $this->output->write('F');
-                $this->checkBalance();
+                $this->checkBalance($handler);
                 continue;
             }
         }

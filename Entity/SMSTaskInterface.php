@@ -105,4 +105,9 @@ interface SMSTaskInterface
      * @return string
      */
     public function getMessageId();
+
+    /**
+     * @return string
+     */
+    public function getHandler();
 }

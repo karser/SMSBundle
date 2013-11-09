@@ -2,20 +2,12 @@
 namespace Karser\SMSBundle\Command;
 
 use Karser\SMSBundle\Entity\SMSTaskInterface;
-use Karser\SMSBundle\Handler\HandlerInterface;
-use Karser\SMSBundle\Manager\SMSManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
 class CheckSmsCommand extends BaseCommand
 {
-    /** @var SMSManager */
-    private $SMSManager;
-
-    /** @var HandlerInterface */
-    private $handler;
-
     protected function configure()
     {
         $this->setName('sms:check');
@@ -24,9 +16,6 @@ class CheckSmsCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->SMSManager = $this->getContainer()->get('karser.sms.manager');
-        $this->handler = $this->SMSManager->getDefaultHandler();
-
         $this->output = $output;
 
         $this->checkMessages();
@@ -46,11 +35,14 @@ class CheckSmsCommand extends BaseCommand
         /** @var SMSTaskInterface[] $tasks */
         $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PROCESSING]);
         $this->writelnFormatted(sprintf('Messages to check %d', count($tasks)));
+
+        $SMSManager = $this->getContainer()->get('karser.sms.manager');
         foreach ($tasks as $SmsTask)
         {
             try {
                 if ($SmsTask->isValid()) {
-                    $status = $this->handler->checkStatus($SmsTask->getMessageId());
+                    $handler = $SMSManager->getHandler($SmsTask->getHandler());
+                    $status = $handler->checkStatus($SmsTask->getMessageId());
                 } else {
                     $status = SMSTaskInterface::STATUS_FAIL;
                 }

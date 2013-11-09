@@ -45,4 +45,21 @@ class SMSManager
     {
         return $this->handlers[$this->default_handler];
     }
+
+    /**
+     * @param string $code
+     * @return HandlerInterface
+     */
+    public function getHandler($code)
+    {
+        return $this->handlers[$code] ? : null;
+    }
+
+    /**
+     * @return HandlerInterface[]
+     */
+    public function getHandlers()
+    {
+        return $this->handlers;
+    }
 }

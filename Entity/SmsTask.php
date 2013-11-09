@@ -44,7 +44,12 @@ abstract class SmsTask implements SMSTaskInterface
      */
     protected $sender;
 
-
+    /**
+     * @ORM\Column(type="string", length=50)
+     *
+     * @var string
+     */
+    protected $handler;
 
     /**
      * @ORM\Column(type="string", length=20)
@@ -174,4 +179,19 @@ abstract class SmsTask implements SMSTaskInterface
         return $this->message_id;
     }
 
+    /**
+     * @param string $handler
+     */
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
 }

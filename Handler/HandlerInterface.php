@@ -1,15 +1,23 @@
 <?php
 namespace Karser\SMSBundle\Handler;
 
+use Karser\SMSBundle\Entity\HlrInterface;
 use Karser\SMSBundle\Entity\SMSTaskInterface;
 
 interface HandlerInterface
 {
+
+    /**
+     * @return string
+     */
+    public function getName();
+
     /**
      * @param string $number
-     * @return bool
+     * @param HlrInterface $hlr
+     * @return mixed
      */
-    public function supports($number);
+    public function supports($number, HlrInterface $hlr = null);
 
     /**
      * @return float
@@ -27,4 +35,9 @@ interface HandlerInterface
      * @return string
      */
     public function checkStatus($message_id);
+
+    /**
+     * @return float
+     */
+    public function getCost();
 }
