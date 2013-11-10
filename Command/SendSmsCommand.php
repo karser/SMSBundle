@@ -17,6 +17,8 @@ class SendSmsCommand extends BaseCommand
     {
         $this->output = $output;
 
+        $this->writelnFormatted('Sending messages...');
+
         $this->sendMessages();
 
         $this->output->writeln('Done.');
@@ -26,7 +28,7 @@ class SendSmsCommand extends BaseCommand
     {
         $balance = $handler->getBalance();
         $this->writeBalance($balance);
-        if ($balance < 1) {
+        if ($balance < 5) {
             throw new \LogicException('Balance error');
         }
     }
@@ -38,24 +40,24 @@ class SendSmsCommand extends BaseCommand
         /** @var \Doctrine\ORM\EntityRepository $SmsTaskRepository */
         $SmsTaskRepository = $em->getRepository($sms_task_class);
 
-        /** @var SMSTaskInterface[] $tasks */
-        $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PENDING]);
-        $this->writelnFormatted(sprintf('Messages to send %d', count($tasks)));
-
         $SMSManager = $this->getContainer()->get('karser.sms.manager');
 
-        foreach ($tasks as $SmsTask)
-        {
-            $handler = $SMSManager->getHandler($SmsTask->getHandler());
+        while (true) {
+            /** @var SMSTaskInterface $task */
+            $task = $SmsTaskRepository->findOneBy(['status' => SMSTaskInterface::STATUS_PENDING]);
+            if (empty($task)) {
+                break;
+            }
+            $handler = $SMSManager->getHandler($task->getHandler());
             try {
-                if ($handler && $SmsTask->isValid()) {
-                    $msg_id = $handler->send($SmsTask);
-                    $SmsTask->setMessageId($msg_id);
-                    $SmsTask->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                if ($handler && $task->isValid()) {
+                    $msg_id = $handler->send($task);
+                    $task->setMessageId($msg_id);
+                    $task->setStatus(SMSTaskInterface::STATUS_PROCESSING);
                 } else {
-                    $SmsTask->setStatus(SMSTaskInterface::STATUS_FAIL);
+                    $task->setStatus(SMSTaskInterface::STATUS_FAIL);
                 }
-                $em->persist($SmsTask);
+                $em->persist($task);
                 $em->flush();
                 $this->output->write('.');
             } catch (\Exception $e) {
@@ -63,6 +65,7 @@ class SendSmsCommand extends BaseCommand
                 $this->checkBalance($handler);
                 continue;
             }
+
         }
 
         $this->output->writeln('');
