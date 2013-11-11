@@ -56,6 +56,7 @@ class SendSmsCommand extends BaseCommand
                     $msg_id = $handler->send($task);
                     $task->setMessageId($msg_id);
                     $task->setStatus(SMSTaskInterface::STATUS_PROCESSING);
+                    $this->output->write('.');
                 } else {
                     throw new \Exception();
                 }
@@ -67,7 +68,6 @@ class SendSmsCommand extends BaseCommand
             $em->persist($task);
             $em->flush();
             $disp->dispatch($task->getStatus(), new KarserSmsEvent($task));
-            $this->output->write('.');
         }
 
         $this->output->writeln('');
