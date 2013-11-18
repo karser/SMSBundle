@@ -31,16 +31,6 @@ class SMSManager
         $this->handlers[$id] = $handler;
     }
 
-    public function findHandler($phone_number)
-    {
-        foreach($this->handlers as $handler) {
-            if ($handler->supports($phone_number)) {
-                return $phone_number;
-            }
-        }
-        return false;
-    }
-
     public function getDefaultHandler()
     {
         return $this->handlers[$this->default_handler];
