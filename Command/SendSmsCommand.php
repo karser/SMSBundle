@@ -3,7 +3,6 @@ namespace Karser\SMSBundle\Command;
 
 use Karser\SMSBundle\Entity\SMSTaskInterface;
 use Karser\SMSBundle\Event\KarserSmsEvent;
-use Karser\SMSBundle\Handler\HandlerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -25,24 +24,14 @@ class SendSmsCommand extends BaseCommand
         $this->output->writeln('Done.');
     }
 
-    private function checkBalance(HandlerInterface $handler)
-    {
-        $balance = $handler->getBalance();
-        $this->writeBalance($balance);
-        if ($balance < 5) {
-            throw new \LogicException('Balance error');
-        }
-    }
-
     private function sendMessages()
     {
-        $disp = $this->getContainer()->get('event_dispatcher');
         $em = $this->getDoctrineMananger();
         $sms_task_class = $this->getContainer()->getParameter('karser.sms.entity.sms_task.class');
         /** @var \Doctrine\ORM\EntityRepository $SmsTaskRepository */
         $SmsTaskRepository = $em->getRepository($sms_task_class);
 
-        $SMSManager = $this->getContainer()->get('karser.sms.manager');
+        $SMSManager = $this->getSmsManager();
 
         while (true) {
             /** @var SMSTaskInterface $task */
@@ -67,7 +56,10 @@ class SendSmsCommand extends BaseCommand
             }
             $em->persist($task);
             $em->flush();
-            $disp->dispatch($task->getStatus(), new KarserSmsEvent($task));
+
+            $ev = new KarserSmsEvent();
+            $ev->setTask($task);
+            $this->dispatch($task->getStatus(), $ev);
         }
 
         $this->output->writeln('');

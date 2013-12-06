@@ -24,7 +24,6 @@ class CheckSmsCommand extends BaseCommand
 
     private function checkMessages()
     {
-        $disp = $this->getContainer()->get('event_dispatcher');
         $em = $this->getDoctrineMananger();
         $sms_task_class = $this->getContainer()->getParameter('karser.sms.entity.sms_task.class');
         /** @var \Doctrine\ORM\EntityRepository $SmsTaskRepository */
@@ -47,7 +46,7 @@ class CheckSmsCommand extends BaseCommand
                 $task->setStatus($status);
                 $em->persist($task);
                 $em->flush();
-                $disp->dispatch($task->getStatus(), new KarserSmsEvent($task));
+                $this->dispatch($task->getStatus(), new KarserSmsEvent($task));
             } catch (\Exception $e) {
                 continue;
             }
