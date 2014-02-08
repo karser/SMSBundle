@@ -33,7 +33,7 @@ class SendSmsCommand extends BaseCommand
 
         $SMSManager = $this->getSmsManager();
 
-        while (true) {
+        for ($i = 0; $i < 50; $i++) {
             /** @var SMSTaskInterface $task */
             $task = $SmsTaskRepository->findOneBy(['status' => SMSTaskInterface::STATUS_PENDING]);
             if (empty($task)) {
