@@ -24,7 +24,8 @@ interface HandlerInterface
 
     /**
      * @param string
+     * @param string|null $phone
      * @return string
      */
-    public function checkStatus($message_id);
+    public function checkStatus($message_id, $phone = null);
 }

@@ -33,13 +33,13 @@ class CheckSmsCommand extends BaseCommand
         $tasks = $SmsTaskRepository->findBy(['status' => SMSTaskInterface::STATUS_PROCESSING]);
         $this->writelnFormatted(sprintf('Messages to check %d', count($tasks)));
 
-        $SMSManager = $this->getContainer()->get('karser.sms.manager');
+        $SMSManager = $this->getSmsManager();
         foreach ($tasks as $task)
         {
             $handler = $SMSManager->getHandler($task->getHandler());
             try {
                 if ($handler && $task->isValid()) {
-                    $status = $handler->checkStatus($task->getMessageId());
+                    $status = $handler->checkStatus($task->getMessageId(), $task->getPhoneNumber());
                 } else {
                     $status = SMSTaskInterface::STATUS_FAIL;
                 }
